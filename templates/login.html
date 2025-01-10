@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Background Remover</title>
+    <!-- Add Google Fonts - Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-gradient-start: #e06932;
+            --primary-gradient-end: #dbb039;
+            --dark-bg: #0f172a;
+            --darker-bg: #0a0f1d;
+            --card-bg: #1e293b;
+        }
+
+        /* Apply Poppins to everything */
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--dark-bg), var(--darker-bg));
+            color: #f8fafc;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mesh-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .blur-element {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.5;
+            will-change: transform;
+        }
+
+        .blur-1 {
+            width: 600px;
+            height: 600px;
+            background: var(--primary-gradient-start);
+            top: -200px;
+            left: -200px;
+            animation: moveBlur1 8s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .blur-2 {
+            width: 700px;
+            height: 700px;
+            background: var(--primary-gradient-end);
+            bottom: -200px;
+            right: -200px;
+            animation: moveBlur2 10s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .blur-3 {
+            width: 500px;
+            height: 500px;
+            background: rgba(199, 210, 254, 0.3);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: moveBlur3 12s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes moveBlur1 {
+            0% {
+                transform: translate(0, 0) scale(0.8);
+            }
+            100% {
+                transform: translate(200px, 100px) scale(1.2);
+            }
+        }
+
+        @keyframes moveBlur2 {
+            0% {
+                transform: translate(0, 0) scale(0.9);
+            }
+            100% {
+                transform: translate(-200px, -150px) scale(1.3);
+            }
+        }
+
+        @keyframes moveBlur3 {
+            0% {
+                transform: translate(-60%, -60%) scale(0.8);
+            }
+            100% {
+                transform: translate(-40%, -40%) scale(1.4);
+            }
+        }
+
+        .glass-effect {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-gradient-start), var(--primary-gradient-end));
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary-gradient-end);
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.4);
+        }
+
+        a {
+            color: var(--primary-gradient-end);
+        }
+
+        a:hover {
+            color: var(--primary-gradient-start);
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center">
+    <div class="mesh-bg">
+        <div class="blur-element blur-1"></div>
+        <div class="blur-element blur-2"></div>
+        <div class="blur-element blur-3"></div>
+    </div>
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-md mx-auto">
+            <div class="text-center mb-8">
+                <i class="fas fa-crop-alt text-4xl text-indigo-400 mb-4"></i>
+                <h1 class="text-3xl font-bold">BG Remover</h1>
+                <p class="text-gray-400 mt-2">Welcome back! Please login to continue.</p>
+            </div>
+
+            <div class="glass-effect rounded-lg p-8">
+                <form id="loginForm" class="space-y-6">
+                    <div>
+                        <label class="block text-sm font-medium mb-2" for="email">Email</label>
+                        <input type="email" id="email" name="email" required
+                            class="w-full px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium mb-2" for="password">Password</label>
+                        <input type="password" id="password" name="password" required
+                            class="w-full px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+                    </div>
+
+                    <button type="submit" class="w-full btn-primary text-white font-semibold px-6 py-3 rounded-lg">
+                        Login
+                    </button>
+                </form>
+
+                <div class="mt-6 text-center">
+                    <p class="text-gray-400">
+                        Don't have an account? 
+                        <a href="/signup" class="hover:underline">Sign up</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = {
+                email: document.getElementById('email').value,
+                password: document.getElementById('password').value
+            };
+
+            try {
+                const response = await fetch('/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    window.location.href = data.redirect;
+                } else {
+                    alert(data.error);
+                }
+            } catch (error) {
+                alert('An error occurred. Please try again.');
+            }
+        });
+    </script>
+</body>
+</html>

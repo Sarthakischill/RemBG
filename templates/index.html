@@ -4,22 +4,132 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Background Remover</title>
+    <!-- Add Google Fonts - Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
-            --primary-yellow: #f6da3b;
+            --primary-gradient-start: #e06932;
+            --primary-gradient-end: #dbb039;
             --dark-bg: #0f172a;
             --darker-bg: #0a0f1d;
             --card-bg: #1e293b;
         }
 
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+
         body {
-            background-color: var(--dark-bg);
+            background: linear-gradient(135deg, var(--dark-bg), var(--darker-bg));
             color: #f8fafc;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Keeping all your existing styles... */
+        .font-light { font-weight: 300; }
+        .font-regular { font-weight: 400; }
+        .font-medium { font-weight: 500; }
+        .font-semibold { font-weight: 600; }
+        .font-bold { font-weight: 700; }
+
+        .mesh-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        /* All your existing animations and styles remain the same... */
+        .blur-element {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.5;
+            will-change: transform;
+        }
+        
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 0.5rem;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .logo-link {
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo-link:hover {
+            opacity: 0.9;
+        }
+
+        .blur-1 {
+            width: 600px;
+            height: 600px;
+            background: var(--primary-gradient-start);
+            top: -200px;
+            left: -200px;
+            animation: moveBlur1 8s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .blur-2 {
+            width: 700px;
+            height: 700px;
+            background: var(--primary-gradient-end);
+            bottom: -200px;
+            right: -200px;
+            animation: moveBlur2 10s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .blur-3 {
+            width: 500px;
+            height: 500px;
+            background: rgba(199, 210, 254, 0.3);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: moveBlur3 12s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes moveBlur1 {
+            0% { transform: translate(0, 0) scale(0.8); }
+            100% { transform: translate(200px, 100px) scale(1.2); }
+        }
+
+        @keyframes moveBlur2 {
+            0% { transform: translate(0, 0) scale(0.9); }
+            100% { transform: translate(-200px, -150px) scale(1.3); }
+        }
+
+        @keyframes moveBlur3 {
+            0% { transform: translate(-60%, -60%) scale(0.8); }
+            100% { transform: translate(-40%, -40%) scale(1.4); }
         }
 
         .glass-effect {
@@ -31,26 +141,27 @@
         .upload-area {
             border: 2px dashed #4b5563;
             transition: all 0.3s ease;
-            background: var(--card-bg);
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(10px);
         }
 
         .upload-area:hover {
-            border-color: var(--primary-yellow);
+            border-color: var(--primary-gradient-end);
             transform: translateY(-2px);
         }
 
         .upload-area.drag-over {
-            border-color: var(--primary-yellow);
-            background: rgba(59, 130, 246, 0.1);
+            border-color: var(--primary-gradient-start);
+            background: rgba(79, 70, 229, 0.1);
         }
 
         .btn-primary {
-            background-color: var(--primary-yellow);
+            background: linear-gradient(135deg, var(--primary-gradient-start), var(--primary-gradient-end));
             transition: all 0.3s ease;
         }
 
         .btn-primary:hover {
-            background-color: #f6da3b;
+            opacity: 0.9;
             transform: translateY(-1px);
         }
 
@@ -60,7 +171,7 @@
 
         .spinner {
             border: 4px solid rgba(255, 255, 255, 0.1);
-            border-left-color: var(--primary-yellow);
+            border-left-color: var(--primary-gradient-end);
             border-radius: 50%;
             width: 40px;
             height: 40px;
@@ -68,9 +179,7 @@
         }
 
         @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
+            to { transform: rotate(360deg); }
         }
 
         .alert {
@@ -88,15 +197,46 @@
 
         .image-card {
             transition: all 0.3s ease;
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(10px);
         }
 
         .image-card:hover {
             transform: translateY(-4px);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .welcome-header {
+            background: linear-gradient(135deg, var(--primary-gradient-start), var(--primary-gradient-end));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .preview-section {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(10px);
         }
     </style>
 </head>
 <body>
+    <div class="mesh-bg">
+        <div class="blur-element blur-1"></div>
+        <div class="blur-element blur-2"></div>
+        <div class="blur-element blur-3"></div>
+    </div>
+
+    <div id="logoutModal" class="modal-overlay">
+        <div class="modal">
+            <h2 class="text-2xl font-bold mb-4">Confirm Logout</h2>
+            <p class="text-gray-300 mb-6">Are you sure you want to logout? All your saved history and data will be permanently deleted.</p>
+            <div class="flex justify-end space-x-4">
+                <button onclick="closeLogoutModal()" class="px-4 py-2 bg-gray-600 rounded-lg hover:bg-gray-700">Cancel</button>
+                <button onclick="confirmLogout()" class="px-4 py-2 bg-red-500 rounded-lg hover:bg-red-600">Logout</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Alert Component -->
     <div id="alert" class="alert glass-effect p-4 rounded-lg shadow-lg max-w-md">
         <div class="flex items-center">
@@ -113,41 +253,50 @@
     </div>
 
     <!-- Navbar -->
-    <!-- Navbar -->
-<nav class="glass-effect fixed w-full z-10">
-    <div class="container mx-auto px-4">
-        <div class="flex justify-between items-center h-16">
-            <div class="flex items-center space-x-4 cursor-pointer" onclick="showUpload()">
-                <i class="fas fa-crop-alt text-2xl text-yellow-500"></i>
-                <span class="text-xl font-bold">BG Remover</span>
-            </div>
-            <div class="flex space-x-6">
-                <button onclick="showUpload()" class="nav-link flex items-center space-x-2">
-                    <i class="fas fa-home"></i>
-                    <span>Home</span>
-                </button>
-                <button onclick="showUpload()" class="nav-link flex items-center space-x-2">
-                    <i class="fas fa-cloud-upload-alt"></i>
-                    <span>Upload</span>
-                </button>
-                <button onclick="showHistory()" class="nav-link flex items-center space-x-2">
-                    <i class="fas fa-history"></i>
-                    <span>History</span>
-                </button>
+    <nav class="glass-effect fixed w-full z-10">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center h-16">
+                <a href="/" class="logo-link">
+                    <i class="fas fa-crop-alt text-2xl" style="color: var(--primary-gradient-end)"></i>
+                    <span class="text-xl font-bold">BgRem</span>
+                </a>
+                <div class="flex items-center space-x-8">
+                    <button onclick="showUpload()" class="text-gray-300 hover:text-white flex items-center space-x-2">
+                        <i class="fas fa-home"></i>
+                        <span>Home</span>
+                    </button>
+                    <button onclick="showHistory()" class="text-gray-300 hover:text-white flex items-center space-x-2">
+                        <i class="fas fa-history"></i>
+                        <span>History</span>
+                    </button>
+                    <div class="flex items-center space-x-4 border-l border-gray-600 pl-8">
+                        <div class="flex items-center space-x-2 text-gray-300">
+                            <i class="fas fa-user"></i>
+                            <span id="userDisplay"></span>
+                        </div>
+                        <button onclick="showLogoutModal()" class="text-gray-300 hover:text-white flex items-center space-x-2">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Logout</span>
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-</nav>
+    </nav>
 
     <!-- Main Content -->
     <main class="flex-grow container mx-auto px-4 pt-24 pb-8">
+        <h1 id="welcomeHeader" class="text-4xl font-bold mb-8 welcome-header text-center">
+            Welcome, <span id="welcomeUser"></span>!
+        </h1>
+
         <!-- Upload Section -->
         <div id="uploadSection" class="max-w-3xl mx-auto">
-            <div class="upload-area rounded-lg p-8 text-center cursor-pointer">
+            <div class="upload-area rounded-lg p-12 text-center cursor-pointer">
                 <input type="file" id="fileInput" class="hidden" accept=".jpg,.jpeg,.png">
                 <div class="flex flex-col items-center">
-                    <i class="fas fa-cloud-upload-alt text-4xl mb-4 text-yellow-500"></i>
-                    <h3 class="text-xl font-semibold mb-2">Drop your image here</h3>
+                    <i class="fas fa-cloud-upload-alt text-5xl mb-4" style="color: var(--primary-gradient-end)"></i>
+                    <h3 class="text-2xl font-semibold mb-3">Drop your image here</h3>
                     <p class="text-gray-400 mb-4">or click to browse</p>
                     <p class="text-sm text-gray-500">Supported formats: JPG, JPEG, PNG</p>
                 </div>
@@ -157,19 +306,13 @@
         <!-- Preview Section -->
         <div id="previewSection" class="hidden max-w-6xl mx-auto">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div class="bg-gray-800 rounded-lg overflow-hidden">
-                    <div class="p-4 border-b border-gray-700">
-                        <h3 class="text-lg font-semibold">Original Image</h3>
-                    </div>
-                    <div class="p-4">
+                <div class="preview-section rounded-lg overflow-hidden">
+                    <div class="p-6">
                         <img id="originalPreview" class="w-full rounded-lg" src="" alt="Original">
                     </div>
                 </div>
-                <div class="bg-gray-800 rounded-lg overflow-hidden">
-                    <div class="p-4 border-b border-gray-700">
-                        <h3 class="text-lg font-semibold">Processed Image</h3>
-                    </div>
-                    <div class="p-4">
+                <div class="preview-section rounded-lg overflow-hidden">
+                    <div class="p-6">
                         <div id="processedContainer" class="relative">
                             <img id="processedPreview" class="w-full rounded-lg" src="" alt="Processed">
                             <div id="processingOverlay" class="hidden processing-overlay absolute inset-0 rounded-lg flex items-center justify-center">
@@ -179,7 +322,7 @@
                                 </div>
                             </div>
                         </div>
-                        <button id="downloadBtn" class="hidden w-full mt-4 btn-primary text-white px-6 py-3 rounded-lg flex items-center justify-center space-x-2">
+                        <button id="downloadBtn" class="hidden w-full mt-6 btn-primary text-white px-6 py-3 rounded-lg flex items-center justify-center space-x-2">
                             <i class="fas fa-download"></i>
                             <span>Download Image</span>
                         </button>
@@ -190,7 +333,7 @@
 
         <!-- History Section -->
         <div id="historySection" class="hidden">
-            <h2 class="text-2xl font-bold mb-6">Processing History</h2>
+            <h2 class="text-2xl font-bold mb-8">Processing History</h2>
             <div id="historyGrid" class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <!-- History items will be inserted here -->
             </div>
@@ -198,16 +341,19 @@
     </main>
 
     <!-- Footer -->
-    <footer class="bg-gray-900 py-6">
+    <footer class="glass-effect py-6 mt-auto">
         <div class="container mx-auto px-4">
             <div class="flex justify-between items-center">
-                <p class="text-gray-400">© 2025 Background Remover</p>
-                <div class="flex space-x-4">
-                    <a href="#" class="text-gray-400 hover:text-white">
+                <p class="text-gray-400">© 2025 SarthakIsChill</p>
+                <div class="flex space-x-6">
+                    <a href="https://github.com/Sarthakischill" class="text-gray-400 hover:text-white transition-colors">
                         <i class="fab fa-github"></i>
                     </a>
-                    <a href="#" class="text-gray-400 hover:text-white">
-                        <i class="fab fa-twitter"></i>
+                    <a href="https://x.com/Sarthakhuh" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fa-solid fa-x"></i>
+                    </a>
+                    <a href="https://buymeacoffee.com/sarths" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fas fa-coffee"></i>
                     </a>
                 </div>
             </div>
@@ -228,6 +374,40 @@
         const alert = document.getElementById('alert');
         const alertMessage = document.getElementById('alertMessage');
         const alertIcon = document.getElementById('alertIcon');
+        const userDisplay = document.getElementById('userDisplay');
+        const welcomeUser = document.getElementById('welcomeUser');
+
+        // Check authentication on load
+        document.addEventListener('DOMContentLoaded', async () => {
+            await checkAuth();
+        });
+
+        // Authentication Functions
+        async function checkAuth() {
+            try {
+                const response = await fetch('/api/auth/status');
+                const data = await response.json();
+                
+                if (!data.authenticated) {
+                    window.location.href = '/login';
+                    return;
+                }
+                
+                userDisplay.textContent = data.user.username;
+                welcomeUser.textContent = data.user.username;
+            } catch (error) {
+                window.location.href = '/login';
+            }
+        }
+
+        async function logout() {
+            try {
+                await fetch('/logout');
+                window.location.href = '/login';
+            } catch (error) {
+                showAlert('error', 'Failed to logout. Please try again.');
+            }
+        }
 
         // Event Listeners
         uploadArea.addEventListener('click', () => fileInput.click());
@@ -259,6 +439,38 @@
             processFile(file);
         }
 
+        function showLogoutModal() {
+            document.getElementById('logoutModal').style.display = 'flex';
+        }
+
+        function closeLogoutModal() {
+            document.getElementById('logoutModal').style.display = 'none';
+        }
+
+        async function confirmLogout() {
+            try {
+                const response = await fetch('/logout', {
+                    method: 'POST'
+                });
+                
+                if (response.ok) {
+                    window.location.href = '/login';
+                } else {
+                    showAlert('error', 'Failed to logout. Please try again.');
+                }
+            } catch (error) {
+                showAlert('error', 'Failed to logout. Please try again.');
+            }
+        }
+
+        // Close modal if clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('logoutModal');
+            if (event.target === modal) {
+                closeLogoutModal();
+            }
+        }
+
         async function processFile(file) {
             if (!file) return;
             
@@ -282,6 +494,7 @@
                 formData.append('image', file);
 
                 processingOverlay.classList.remove('hidden');
+                downloadBtn.classList.add('hidden');
                 
                 const response = await fetch('/api/remove-background', {
                     method: 'POST',
@@ -339,22 +552,65 @@
         }
 
         // UI Update Functions
-        function updateHistoryGrid(images) {
+        async function deleteImage(imageId) {
+        try {
+            const response = await fetch(`/api/images/delete/${imageId}`, {
+                method: 'DELETE'
+            });
+
+            if (!response.ok) {
+                const data = await response.json();
+                throw new Error(data.error || 'Failed to delete image');
+            }
+
+            // Remove the image card from the UI immediately
+            const imageCard = document.querySelector(`[data-image-id="${imageId}"]`);
+            if (imageCard) {
+                imageCard.remove();
+            }
+
+            showAlert('success', 'Image deleted successfully');
+
+            // Check if there are any remaining images
             const historyGrid = document.getElementById('historyGrid');
-            historyGrid.innerHTML = images.map(item => `
-                <div class="image-card bg-gray-800 rounded-lg overflow-hidden">
-                    <img src="${item.url}" class="w-full h-48 object-cover" alt="Processed Image">
-                    <div class="p-4">
-                        <p class="text-sm text-gray-400">${item.date}</p>
+            if (historyGrid.children.length === 0) {
+                historyGrid.innerHTML = '<p class="text-gray-400 col-span-full text-center py-8">No images in history</p>';
+            }
+        } catch (error) {
+            showAlert('error', error.message);
+        }
+    }
+
+    function updateHistoryGrid(images) {
+        const historyGrid = document.getElementById('historyGrid');
+        if (images.length === 0) {
+            historyGrid.innerHTML = '<p class="text-gray-400 col-span-full text-center py-8">No images in history</p>';
+            return;
+        }
+
+        historyGrid.innerHTML = images.map(item => `
+            <div class="image-card bg-gray-800 rounded-lg overflow-hidden" data-image-id="${item.id}">
+                <img src="${item.url}" class="w-full h-48 object-cover" alt="Processed Image">
+                <div class="p-4">
+                    <p class="text-sm text-gray-400">${item.date}</p>
+                    <div class="flex gap-2 mt-2">
                         <button onclick="downloadHistory('${item.url}')" 
-                                class="mt-2 w-full btn-primary text-white px-4 py-2 rounded-lg flex items-center justify-center space-x-2">
+                                class="flex-1 btn-primary text-white px-4 py-2 rounded-lg flex items-center justify-center space-x-2">
                             <i class="fas fa-download"></i>
                             <span>Download</span>
                         </button>
+                        <button onclick="deleteImage(${item.id})"
+                                class="flex-1 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg flex items-center justify-center space-x-2">
+                            <i class="fas fa-trash"></i>
+                            <span>Delete</span>
+                        </button>
                     </div>
                 </div>
-            `).join('');
-        }
+            </div>
+        `).join('');
+    }
+
+        
 
         function showAlert(type, message) {
             alertMessage.textContent = message;
