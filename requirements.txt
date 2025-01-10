@@ -1,0 +1,8 @@
+# requirements.txt
+flask==2.3.3
+Flask-Login==0.6.2
+Flask-SQLAlchemy==3.0.5
+Werkzeug==2.3.7
+rembg==2.0.50
+Pillow==10.0.0
+SQLAlchemy==2.0.20
